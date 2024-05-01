@@ -1,67 +1,92 @@
-class AVWX {
+import 'dart:convert';
+
+class METAR {
   final String raw;
   final String flight_rules;
   final String relative_humidity;
-  /*final String time_of_capture;
+  final String time_of_capture;
   final String pressure;
   final String clouds;
   final String dewpoint;
-  final String translate;
   final String remarks;
   final String temperature;
   final String visibility;
   final String wind;
-  final String weather;*/
+  final String weather;
 
-  const AVWX({
+  const METAR({
     required this.raw,
     required this.flight_rules,
     required this.relative_humidity,
-    /*required this.time_of_capture,
+    required this.time_of_capture,
     required this.pressure,
     required this.clouds,
     required this.dewpoint,
-    required this.translate,
     required this.remarks,
     required this.temperature,
     required this.visibility,
     required this.wind,
-    required this.weather,*/
+    required this.weather,
   });
 
-  factory AVWX.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
+  factory METAR.fromJson(Map<String, dynamic> json) {
+    //print(json["translate"]["clouds"]);
+    String pressure = json["translate"]["altimeter"];
+    if (json["units"]["altimeter"] == "hPa")
+    {
+      pressure = pressure.substring(0, pressure.indexOf("("));
+    }
+    else
+    {
+      pressure = pressure.substring(pressure.indexOf("(")).replaceAll("(", "").replaceAll(")", "");
+    }
+
+    String visibility = json["translate"]["visibility"];
+    if (json["units"]["visibility"] == "m")
+    {
+      visibility = visibility.substring(0, visibility.indexOf("("));
+    }
+    else
+    {
+      visibility = "${double.parse(visibility.substring(visibility.indexOf("(")).replaceAll("(", "").replaceAll("km)", "")).toStringAsFixed(0)}km";
+    }
+
+    String remarks = jsonEncode(json["translate"]["remarks"]).replaceAll("{" , "").replaceAll("}", "");
+    if (remarks == "")
+    {
+      remarks = "No remarks";
+    }
+    else
+    {
+      List<String> parts = remarks.split(',');
+      remarks = "";
+      for (int i = 0; i < parts.length; i++)
       {
-        'raw': String raw,
-        'flight_rules': String flight_rules,
-        'relative_humidity': double relative_humidity,
-        /*'time_of_capture': String time_of_capture,
-        'pressure': String pressure,
-        'clouds': String clouds,
-        'dewpoint': String dewpoint,
-        'translate': String translate,
-        'remarks': String remarks,
-        'temperature': String temperature,
-        'visibility': String visibility,
-        'wind': String wind,
-        'weather': String weather,*/
-      } =>
-          AVWX(
-            raw: raw,
-            flight_rules: flight_rules,
-            relative_humidity: relative_humidity.toString(),
-            /*time_of_capture: time_of_capture,
-            pressure: pressure,
-            clouds: clouds,
-            dewpoint: dewpoint,
-            translate: translate,
-            remarks: remarks,
-            temperature: temperature,
-            visibility: visibility,
-            wind: wind,
-            weather: weather,*/
-          ),
-      _ => throw const FormatException('Failed to load METAR.'),
-    };
+        String s = parts[i];
+        if (s.isNotEmpty && s.contains(":"))
+        {
+          remarks += s.substring(s.indexOf(":")).replaceAll(":\"", "").replaceAll("\"", "");
+          if (i != parts.length - 1)
+          {
+            remarks += "\n";
+          }
+        }
+      }
+    }
+
+    return METAR(
+      raw:                json["raw"],
+      flight_rules:       json["flight_rules"],
+      relative_humidity:  json["relative_humidity"] * 100 % 10 == 0 ? "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %" : "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %",
+      time_of_capture:    json["time"]["dt"].replaceAll("T", " ").replaceAll("Z", ""),
+      pressure:           pressure,
+      clouds:             json["translate"]["clouds"],
+      dewpoint:           json["translate"]["dewpoint"].substring(0,json["translate"]["dewpoint"].indexOf("(")),
+      remarks:            remarks,
+      temperature:        json["translate"]["temperature"].substring(0,json["translate"]["temperature"].indexOf("(")),
+      visibility:         visibility,
+      wind:               json["translate"]["wind"],
+      weather:            json["translate"]["wx_codes"],
+    );
   }
 }

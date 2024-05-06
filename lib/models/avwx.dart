@@ -77,7 +77,7 @@ class METAR {
     return METAR(
       raw:                json["raw"],
       flight_rules:       json["flight_rules"],
-      relative_humidity:  json["relative_humidity"] * 100 % 10 == 0 ? "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %" : "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %",
+      relative_humidity:  json["relative_humidity"] * 100 % 10 == 0 ? "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %" : "${(json["relative_humidity"] * 100).toStringAsFixed(2)} %",
       time_of_capture:    json["time"]["dt"].replaceAll("T", " ").replaceAll("Z", ""),
       pressure:           pressure,
       clouds:             json["translate"]["clouds"],
@@ -89,4 +89,8 @@ class METAR {
       weather:            json["translate"]["wx_codes"],
     );
   }
+}
+
+class TAF {
+  
 }

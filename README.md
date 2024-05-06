@@ -1,6 +1,6 @@
-# sky_cast
+# SkyCast
 
-SkyCast in an application that provides to you METAR and TAF of a specific ICAO code or using your coordinates
+SkyCast is an application that provides to you METAR and TAF of a specific ICAO code or using your GPS coordinates
 
 ## Getting Started
 

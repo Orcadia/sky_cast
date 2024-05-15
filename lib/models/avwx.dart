@@ -2,6 +2,8 @@ import 'dart:convert';
 
 class METAR {
   final String raw;
+  final String city;
+  final String country;
   final String flight_rules;
   final String relative_humidity;
   final String time_of_capture;
@@ -16,6 +18,8 @@ class METAR {
 
   const METAR({
     required this.raw,
+    required this.city,
+    required this.country,
     required this.flight_rules,
     required this.relative_humidity,
     required this.time_of_capture,
@@ -76,6 +80,8 @@ class METAR {
 
     return METAR(
       raw:                json["raw"],
+      city:               json["info"]["city"],
+      country:            json["info"]["country"],
       flight_rules:       json["flight_rules"],
       relative_humidity:  json["relative_humidity"] * 100 % 10 == 0 ? "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %" : "${(json["relative_humidity"] * 100).toStringAsFixed(2)} %",
       time_of_capture:    json["time"]["dt"].replaceAll("T", " ").replaceAll("Z", ""),
@@ -87,6 +93,27 @@ class METAR {
       visibility:         visibility,
       wind:               json["translate"]["wind"],
       weather:            json["translate"]["wx_codes"],
+    );
+  }
+
+
+  factory METAR.empty() {
+
+    return METAR(
+      raw:                "",
+      city:               "",
+      country:            "",
+      flight_rules:       "",
+      relative_humidity:  "",
+      time_of_capture:    "",
+      pressure:           "",
+      clouds:             "",
+      dewpoint:           "",
+      remarks:            "",
+      temperature:        "",
+      visibility:         "",
+      wind:               "",
+      weather:            "",
     );
   }
 }

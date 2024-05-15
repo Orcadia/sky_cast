@@ -84,8 +84,8 @@ class _HomePageState extends State<Menupage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
     );

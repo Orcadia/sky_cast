@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:sky_cast/utils/user_preferences.dart';
 
 class METAR {
+
   final String raw;
   final String city;
   final String country;
@@ -78,18 +80,32 @@ class METAR {
       }
     }
 
+    String temperature = json["translate"]["temperature"];
+    String dewpoint = json["translate"]["dewpoint"];
+    final unitsValue = UserPreferences.getUnits();
+    if (unitsValue != null && unitsValue)
+    {
+      temperature = temperature.substring(0, json["translate"]["temperature"].indexOf("("));
+      dewpoint = json["translate"]["dewpoint"].substring(0,json["translate"]["dewpoint"].indexOf("("));
+    }
+    else
+    {
+      temperature = temperature.substring(temperature.indexOf("(")).replaceAll("(", "").replaceAll(")", "");
+      dewpoint = dewpoint.substring(dewpoint.indexOf("(")).replaceAll("(", "").replaceAll(")", "");
+    }
+
     return METAR(
       raw:                json["raw"],
       city:               json["info"]["city"],
       country:            json["info"]["country"],
       flight_rules:       json["flight_rules"],
       relative_humidity:  json["relative_humidity"] * 100 % 10 == 0 ? "${(json["relative_humidity"] * 100).toStringAsFixed(0)} %" : "${(json["relative_humidity"] * 100).toStringAsFixed(2)} %",
-      time_of_capture:    json["time"]["dt"].replaceAll("T", " ").replaceAll("Z", ""),
+      time_of_capture:    json["time"]["dt"].replaceAll("T", " ").replaceAll(":00Z", ""),
       pressure:           pressure,
       clouds:             json["translate"]["clouds"],
-      dewpoint:           json["translate"]["dewpoint"].substring(0,json["translate"]["dewpoint"].indexOf("(")),
+      dewpoint:           dewpoint,
       remarks:            remarks,
-      temperature:        json["translate"]["temperature"].substring(0,json["translate"]["temperature"].indexOf("(")),
+      temperature:        temperature,
       visibility:         visibility,
       wind:               json["translate"]["wind"],
       weather:            json["translate"]["wx_codes"],

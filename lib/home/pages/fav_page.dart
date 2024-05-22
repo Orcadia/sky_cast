@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
-class Favpage extends StatelessWidget {
+class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Contenu de la Page trois'), // Ajoutez ici le contenu de votre première page
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Favourites'),
+      ),
+      body: Center(
+          child: Text('Contenu de la Page Deux')
+      ), // Ajoutez ici le contenu de votre première page
     );
   }
 }

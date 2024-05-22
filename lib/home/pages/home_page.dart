@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
 import 'package:sky_cast/models/avwx.dart';
 import 'package:sky_cast/utils/utils.dart';
 
 
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<Homepage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 
 
-class _HomePageState extends State<Homepage> {
+class _HomePageState extends State<HomePage> {
   late Future<METAR> metar;
 
   void initState() {
@@ -27,6 +26,9 @@ class _HomePageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
       body: Center(
         child: FutureBuilder<METAR>(
             future: metar,
@@ -52,7 +54,7 @@ class _HomePageState extends State<Homepage> {
 
               // By default, show a loading spinner.
               return const CircularProgressIndicator(
-                color: Colors.lightBlue,
+                color: Colors.indigo,
               );
             }
         ),

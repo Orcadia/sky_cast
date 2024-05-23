@@ -1,9 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:sky_cast/details/weather_screen.dart';
 import 'package:sky_cast/models/avwx.dart';
 import 'package:sky_cast/utils/utils.dart';
-
-
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,54 +11,33 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
-
 class _HomePageState extends State<HomePage> {
   late Future<METAR> metar;
 
+  @override
   void initState() {
     super.initState();
     metar = fetchMetar();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
+      body: FutureBuilder<METAR>(
+        future: metar,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('An error occured : ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return WeatherScreen(metar: snapshot.data!);
+          } else {
+            return const Center(child: Text('No datas available!'));
+          }
+        },
       ),
-      body: Center(
-        child: FutureBuilder<METAR>(
-            future: metar,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.raw + "\n" +
-                    snapshot.data!.city + "\n" +
-                    snapshot.data!.country + "\n" +
-                    snapshot.data!.flight_rules + "\n" +
-                    snapshot.data!.relative_humidity + "\n" +
-                    snapshot.data!.time_of_capture + "\n" +
-                    snapshot.data!.pressure + "\n" +
-                    snapshot.data!.clouds + "\n" +
-                    snapshot.data!.dewpoint + "\n" +
-                    snapshot.data!.remarks + "\n" +
-                    snapshot.data!.temperature + "\n" +
-                    snapshot.data!.visibility + "\n" +
-                    snapshot.data!.wind + "\n" +
-                    snapshot.data!.weather + "\n");
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
 
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator(
-                color: Colors.indigo,
-              );
-            }
-        ),
-      ),
     );
   }
 }
-

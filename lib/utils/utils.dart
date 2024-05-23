@@ -51,6 +51,7 @@ Future<METAR> fetchMetar([String? icao]) async {
           //.get(Uri.parse('http://192.168.1.130:8000/api/metar/${position.latitude},${position.longitude}?options=translate,info')); // For debugging purposes
           .get(Uri.parse('http://82.66.114.193:8000/api/metar/${position.latitude},${position.longitude}?options=translate,info'));
       if (response.statusCode == 200) {
+        print("Serveur connecté!");
       // If the server did return a 200 OK response,
       // then parse the JSON.
         return METAR

@@ -1,9 +1,12 @@
 import 'dart:convert';
-import 'package:sky_cast/utils/user_preferences.dart';
+import 'package:sky_cast/services/user_preferences.dart';
 
-class METAR {
+// This file aims to parse the given request into different variables
+class METAR
+{
 
   final String raw;
+  final String station;
   final String city;
   final String country;
   final String flight_rules;
@@ -20,6 +23,7 @@ class METAR {
 
   const METAR({
     required this.raw,
+    required this.station,
     required this.city,
     required this.country,
     required this.flight_rules,
@@ -35,10 +39,10 @@ class METAR {
     required this.weather,
   });
 
-  factory METAR.fromJson(Map<String, dynamic> json) {
-    //print(json["translate"]["clouds"]);
+  factory METAR.fromJson(Map<String, dynamic> json)
+  {
     String pressure = json["translate"]["altimeter"];
-    if (json["units"]["altimeter"] == "hPa")
+    if (json["units"]["altimeter"] == "hPa") // Check the units of the pressure
     {
       pressure = pressure.substring(0, pressure.indexOf("("));
     }
@@ -48,7 +52,7 @@ class METAR {
     }
 
     String visibility = json["translate"]["visibility"];
-    if (json["units"]["visibility"] == "m")
+    if (json["units"]["visibility"] == "m") // Check the units of the visibility
     {
       visibility = visibility.substring(0, visibility.indexOf("("));
     }
@@ -58,11 +62,11 @@ class METAR {
     }
 
     String remarks = jsonEncode(json["translate"]["remarks"]).replaceAll("{" , "").replaceAll("}", "");
-    if (remarks == "")
+    if (remarks == "") // Check if the remarks is empty
     {
-      remarks = "No remarks";
+      remarks = "No remarks from this station";
     }
-    else
+    else // Subdivide the remarks into n elements
     {
       List<String> parts = remarks.split(',');
       remarks = "";
@@ -80,10 +84,15 @@ class METAR {
       }
     }
 
+    String weather = json["translate"]["wx_codes"];
+    if (weather.isEmpty) { // Check if the weather is empty
+      weather = "-";
+    }
+
     String temperature = json["translate"]["temperature"];
     String dewpoint = json["translate"]["dewpoint"];
     final unitsValue = UserPreferences.getUnits();
-    if (unitsValue != null && unitsValue)
+    if (unitsValue != null && unitsValue) // Check if the unitsValue from shared preferences is true or false to display the correct unit
     {
       temperature = temperature.substring(0, json["translate"]["temperature"].indexOf("("));
       dewpoint = json["translate"]["dewpoint"].substring(0,json["translate"]["dewpoint"].indexOf("("));
@@ -96,6 +105,7 @@ class METAR {
 
     return METAR(
       raw:                json["raw"],
+      station:            json["station"],
       city:               json["info"]["city"],
       country:            json["info"]["country"],
       flight_rules:       json["flight_rules"],
@@ -108,15 +118,16 @@ class METAR {
       temperature:        temperature,
       visibility:         visibility,
       wind:               json["translate"]["wind"],
-      weather:            json["translate"]["wx_codes"],
+      weather:            weather,
     );
   }
 
 
   factory METAR.empty() {
 
-    return METAR(
+    return const METAR(
       raw:                "",
+      station:            "",
       city:               "",
       country:            "",
       flight_rules:       "",
@@ -135,5 +146,5 @@ class METAR {
 }
 
 class TAF {
-  
+
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:sky_cast/models/avwx.dart';
-import 'package:sky_cast/utils/utils.dart';
+import 'package:sky_cast/services/utils.dart';
 import 'pages/home_page.dart' as Home;
 import 'pages/search_page.dart' as Search;
 import 'pages/fav_page.dart' as Fav;
@@ -18,16 +17,17 @@ class _MenuPageState extends State<MenuPage> {
   late Future<METAR> metar;
   int _selectedIndex = 0;
 
+  @override
   void initState() {
     super.initState();
     metar = fetchMetar();
   }
 
   static final List<Widget> _widgetOptions = <Widget>[
-    Home.HomePage(), // Utilisez les classes des pages
-    Search.SearchPage(), // Utilisez les classes des pages
-    Fav.FavPage(), // Utilisez les classes des pages
-    Setting.SettingPage(), // Utilisez les classes des pages
+    const Home.HomePage(), // Utilisez les classes des pages
+    const Search.SearchPage(), // Utilisez les classes des pages
+    const Fav.FavPage(), // Utilisez les classes des pages
+    const Setting.SettingPage(), // Utilisez les classes des pages
   ];
 
   final Map<int, Color> _selectedItemColors = {
@@ -35,6 +35,13 @@ class _MenuPageState extends State<MenuPage> {
     1: Colors.brown,
     2: Colors.red,
     3: Colors.black45,
+  };
+
+  final Map<int, Icon> _selectedTitle = {
+    0: const Icon(size: 50, color: Colors.indigo, Icons.home),
+    1: const Icon(size: 50, color: Colors.brown, Icons.search),
+    2: const Icon(size: 50, color: Colors.red, Icons.favorite),
+    3: const Icon(size: 50, color: Colors.black45, Icons.settings),
   };
 
   void _onItemTapped(int index) {
@@ -46,9 +53,10 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: AppBar(
-        title: const Text('SkyCast'),
-      ),*/
+      appBar: AppBar(
+          title: Center(
+        child: _selectedTitle[_selectedIndex]!,
+      )),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -56,7 +64,6 @@ class _MenuPageState extends State<MenuPage> {
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
-
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -75,7 +82,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:  _selectedItemColors[_selectedIndex],
+        selectedItemColor: _selectedItemColors[_selectedIndex],
         unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),

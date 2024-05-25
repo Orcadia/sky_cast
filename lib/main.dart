@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
+import 'package:flutter/services.dart';
 import 'package:sky_cast/home/menu_page.dart';
-import 'package:sky_cast/utils/user_preferences.dart';
+import 'package:sky_cast/services/user_preferences.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await UserPreferences.init();
   runApp(const MyApp());
 }

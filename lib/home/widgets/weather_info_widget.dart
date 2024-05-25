@@ -23,14 +23,19 @@ class WeatherInfoWidget extends StatelessWidget {
         children: [
           Text(
             title,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(
+            height: 4,
+            width: 10,
+          ),
           Text(
             subtitle,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,
               color: Colors.black54,

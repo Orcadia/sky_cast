@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AirportDescription extends StatelessWidget {
   final String city;
   final String country;
-  final String other;
+  final String icao;
 
   const AirportDescription(
       {super.key,
       required this.city,
       required this.country,
-      required this.other});
+      required this.icao});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,12 @@ class AirportDescription extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Colors.cyan, Colors.blue],
+          colors: [
+            Colors.lightBlue,
+            Colors.blue,
+            Colors.blueAccent,
+            Colors.indigo
+          ],
         ),
         borderRadius: BorderRadius.circular(10),
       ),
@@ -25,18 +30,19 @@ class AirportDescription extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            '$other - $city airport, ($country)',
-            style: TextStyle(
+            '$icao - $city airport ($country)',
+            // Display the data from the API in the element
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-
-          SizedBox(height: 10),
-          Icon(
+          const SizedBox(height: 10),
+          const Icon(
             Icons.flight,
-            color: Colors.black,
+            color: Colors.white,
             size: 24,
           ),
         ],

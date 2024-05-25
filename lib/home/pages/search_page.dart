@@ -1,42 +1,91 @@
 import 'package:flutter/material.dart';
-import 'widget/airport_widget.dart';
-import 'package:sky_cast/utils/utils.dart';
+import 'package:sky_cast/home/widgets/weather_screen.dart';
+import 'package:sky_cast/services/user_preferences.dart';
+import 'package:sky_cast/services/utils.dart';
 import 'package:sky_cast/models/avwx.dart';
 
-class Searchpage extends StatefulWidget {
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
-  _SearchpageState createState() => _SearchpageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchpageState extends State<Searchpage> {
-  TextEditingController _textEditingController = TextEditingController();
+class _SearchPageState extends State<SearchPage> {
+  final TextEditingController _textEditingController = TextEditingController();
   METAR? _metar;
   String? _searchResult;
   String _errorMessage = '';
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Search'),
-        actions: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                maxLength: 4,
-                controller: _textEditingController,
-                onChanged: (value) {
-                  _search(value); // Exécute la recherche chaque fois que le texte change
-                },
-                decoration: InputDecoration(
-                  labelText: 'Entrez le code ICAO',
-                  border: OutlineInputBorder(),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120.0),
+        child: AppBar(
+          flexibleSpace: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        maxLength: 4,
+                        controller: _textEditingController,
+                        textCapitalization: TextCapitalization.characters,
+                        onChanged: (value) {
+                          _search(
+                              value); // Execute search each time text changes
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter ICAO code',
+                          isDense: true, // Added this
+                          contentPadding: EdgeInsets.all(8), // Added this
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Center(
+                        child: Row(children: [
+                      Padding(
+                          padding: const EdgeInsets.only(bottom: 25),
+                          child: IconButton(
+                            icon: isFavorite
+                                ? const Icon(
+                                    size: 40, color: Colors.red, Icons.favorite)
+                                : const Icon(
+                                    size: 40,
+                                    color: Colors.red,
+                                    Icons.favorite_border),
+                            onPressed: () async {
+                              if (_metar != null) {
+                                if (isFavorite) {
+                                  // Add ICAO to favorites
+                                  await UserPreferences()
+                                      .removeICAO(_metar!.station);
+                                } else {
+                                  // Remove ICAO from favorites
+                                  await UserPreferences()
+                                      .setICAO(_metar!.station);
+                                }
+                                // Update the value of isFavorite
+                                setState(() {
+                                  isFavorite = !isFavorite;
+                                });
+                              }
+                            },
+                          ))
+                    ])),
+                  ],
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
       body: _buildBody(),
     );
@@ -48,12 +97,12 @@ class _SearchpageState extends State<Searchpage> {
         child: Text(_errorMessage),
       );
     } else if (_metar == null) {
-      return Center(
-        child: Text('Aucun résultat de recherche'),
+      return const Center(
+        child: Text('No result'),
       );
     } else {
-      return AirportWidget(
-        metarAirportCode: _metar!,
+      return WeatherScreen(
+        metar: _metar!,
       );
     }
   }
@@ -62,22 +111,27 @@ class _SearchpageState extends State<Searchpage> {
     if (searchText.isEmpty) {
       setState(() {
         _metar = null;
-        _errorMessage = 'Aucun code ICAO entré';
+        _errorMessage = 'No ICAO code entered';
+        isFavorite = false; // Update the value of isFavorite
       });
       return;
     }
 
     try {
       METAR metar = await fetchMetar(searchText.toUpperCase());
+      bool isICAOSaved = await UserPreferences().isICAOSaved(searchText);
+
       setState(() {
         _metar = metar;
         _searchResult = searchText;
         _errorMessage = '';
+        isFavorite = isICAOSaved; // Update the value of isFavorite
       });
     } catch (e) {
       setState(() {
         _metar = null;
-        _errorMessage = 'Il n\'existe pas d\'aéroport avec le code $searchText';
+        _errorMessage = 'There is no airport with ICAO: $searchText';
+        isFavorite = false; // Update the value of isFavorite
       });
     }
   }

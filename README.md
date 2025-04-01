@@ -28,7 +28,7 @@
 
 ###
 
-<p align="left">This aim of this school project was to introduce me to Android application development using Flutter framework.<br>This project was done in team of three and we choose to make SkyCast because we want to make an app for METAR.<br>Figma was used to make the model of the app. Then we used Android Studio to make the app.<br>Docker was used on a Raspberry Pi 4 to host AVWX API. All the setup was done by me because I have already used this API to parse it in C++.</p>
+<p align="left">This aim of this project was to introduce me to Android application development using Flutter framework.<br>This project was done in team of three and we choose to make SkyCast because we want to make an app for METAR.<br>Figma was used to make the model of the app. Then we used Android Studio to make the app.<br>Docker was used on a Raspberry Pi 4 to host AVWX API. All the setup was done by me because I have already used this API to parse it in C++.</p>
 
 ###
 
